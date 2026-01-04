@@ -536,6 +536,12 @@ void example() {
   - 到了C++11以后的版本中，头文件不比再加上.h后缀，对于C标准库，需要再前面加上c前缀
     - 例如：stdio.h->cstdio
 
+## 正则表达式
+
+在C++11中引入了正则表达式，头文件： <regex>
+
+
+
 ## 数量不定的模板参数
 
 - ...变成关键字
@@ -726,6 +732,33 @@ Complex：
 - `const`变量可在运行时初始化（如`const int x = getValue();`）。
 
 - `const`仅保证变量不可修改，不强制编译时计算。
+
+
+
+
+
+## noexcept关键字
+
+用于声明函数不会出现抛出异常，如果抛出异常就会调用std::terminate()函数
+
+- 作为运算符的用法
+
+```c++
+void f() noexcept {}
+void g() {}
+
+int main() {
+    bool b1 = noexcept(f());  // true，f() 声明为 noexcept
+    bool b2 = noexcept(g());  // false，g() 可能抛出异常
+    
+    // 检查表达式
+    bool b3 = noexcept(1 + 2);  // true，基本运算不会抛异常
+}
+```
+
+
+
+
 
 
 
@@ -4536,3 +4569,103 @@ HASH算法不能称为加密算法 因为加密后 不能还原
 
 因为在DES算法中 密文长度与明文长度相同 且每八位一组 64位刚好除尽 所以会添加八位校验位也就是72位 72位减去八位得64位
 
+
+
+# 
+
+# 设计模式
+
+**Meyer's Singleton** 单例设计模式
+
+```c++
+inline const std::map<StatusCode, std::string> &status_code_strings() {
+  static const std::map<StatusCode, std::string> status_code_strings = {
+    {StatusCode::unknown, ""},
+    {StatusCode::information_continue, "100 Continue"},
+    {StatusCode::information_switching_protocols, "101 Switching Protocols"},
+    {StatusCode::information_processing, "102 Processing"},
+    {StatusCode::success_ok, "200 OK"},
+    {StatusCode::success_created, "201 Created"},
+    {StatusCode::success_accepted, "202 Accepted"},
+    {StatusCode::success_non_authoritative_information, "203 Non-Authoritative Information"},
+    {StatusCode::success_no_content, "204 No Content"},
+    {StatusCode::success_reset_content, "205 Reset Content"},
+    {StatusCode::success_partial_content, "206 Partial Content"},
+    {StatusCode::success_multi_status, "207 Multi-Status"},
+    {StatusCode::success_already_reported, "208 Already Reported"},
+    {StatusCode::success_im_used, "226 IM Used"}
+  };
+}
+```
+
+
+
+-	只有在第一次调用时才会初始化
+-	如果程序从未使用状态码映射，就永远不会创建
+ -	auto& map = status_code_strings();  // 第一次调用时初始化
+
+
+
+- C++11 保证静态局部变量的初始化是线程安全的
+
+- 多个线程同时调用时，初始化只会发生一次
+
+  ```C++
+  auto thread1 = std::thread([](){
+      auto& m1 = status_code_strings();  // 安全
+  });
+  auto thread2 = std::thread([](){
+      auto& m2 = status_code_strings();  // 安全
+  });
+  ```
+
+   静态变量在程序结束时自动销毁
+  无内存泄漏风险
+
+这适用于日志、服务器状态码 可以节省内存
+
+```c++
+// 始终返回同一个映射的引用
+auto& map1 = status_code_strings();
+auto& map2 = = status_code_strings();
+assert(&map1 == &map2);  // 同一个对象
+```
+
+
+
+
+
+## 线程安全
+
+
+
+
+
+当需要创建局部变量时，特别是创建局部静态变量时，多个线程申请内存，最终会导致内存溢出
+
+// 静态局部变量的初始化是线程安全的
+
+// 这意味着：
+// 1. 只有一个线程能执行初始化
+// 2. 其他线程会等待初始化完成
+// 3. 初始化完成后，所有线程都能访问
+
+```c++
+inline StatusCode status_code(const std::string &status_code_string) noexcept {
+    class StringToStatusCode : public std::unordered_map<std::string, SimpleWeb::StatusCode> {
+    public:
+      StringToStatusCode() {
+        for(auto &status_code : status_code_strings())
+          emplace(status_code.second, status_code.first);
+      }
+    };
+    static StringToStatusCode string_to_status_code;  // ✅ 线程安全初始化
+    
+    auto pos = string_to_status_code.find(status_code_string);
+    if(pos == string_to_status_code.end())
+      return StatusCode::unknown;
+    return pos->second;
+}
+```
+
+局部类限制了，该类只能在函数内部调用保证了接口的安全性，并且其继承了容器类，这样直接就可以使用该容器的函数以及容器结构，但是这也暴露了一些接口，例如用户在调用时还可以调用别的unordered_map的别的方法
