@@ -4688,12 +4688,7 @@ HASH算法不能称为加密算法 因为加密后 不能还原
 
 在DES算法中 输入密文K（64）位，去除校验位 得到64位秘钥
 
-因为在DES算法中 密文长度与明文长度相同 且每八位一组 64位刚好除尽 所以会添加八位校验位也就是72位 72位减去八位得64位
-
-<<<<<<< Updated upstream
-
-
-# 
+因为在DES算法中 密文长度与明文长度相同 且每八位一组 64位刚好除尽 所以会添加八位校验位也就是72位 72位减去八位得64位 
 
 # 设计模式
 
@@ -4759,10 +4754,6 @@ assert(&map1 == &map2);  // 同一个对象
 
 ## 线程安全
 
-
-
-
-
 当需要创建局部变量时，特别是创建局部静态变量时，多个线程申请内存，最终会导致内存溢出
 
 // 静态局部变量的初始化是线程安全的
@@ -4781,7 +4772,7 @@ inline StatusCode status_code(const std::string &status_code_string) noexcept {
           emplace(status_code.second, status_code.first);
       }
     };
-    static StringToStatusCode string_to_status_code;  // ✅ 线程安全初始化
+    static StringToStatusCode string_to_status_code;  //线程安全初始化
     
     auto pos = string_to_status_code.find(status_code_string);
     if(pos == string_to_status_code.end())
@@ -4791,5 +4782,4 @@ inline StatusCode status_code(const std::string &status_code_string) noexcept {
 ```
 
 局部类限制了，该类只能在函数内部调用保证了接口的安全性，并且其继承了容器类，这样直接就可以使用该容器的函数以及容器结构，但是这也暴露了一些接口，例如用户在调用时还可以调用别的unordered_map的别的方法
-=======
->>>>>>> Stashed changes
+
