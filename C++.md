@@ -265,6 +265,87 @@ struct UN
 
 
 
+## Extern
+
+C++中的`extern`关键字用于声明变量或函数具有**外部链接**，表明其定义在其他文件中。常用于声明全局变量
+
+### 声明外部全局变量
+
+```c++
+// file1.cpp
+int globalVar = 42;  // 定义全局变量
+
+// file2.cpp
+extern int globalVar;  // 声明（非定义），告诉编译器变量在其他文件
+
+void func() {
+    cout << globalVar;  // 使用全局变量
+}
+```
+
+### 声明外部函数
+
+```c++
+// utils.h
+extern void helper();  // 声明函数，C++中全局函数默认为extern 因此通常extern可省略 
+
+// utils.cpp
+void helper() {  // 实际定义
+    // 函数实现
+}
+```
+
+
+
+```c++
+// globals.h - 头文件只包含声明
+#ifndef GLOBALS_H
+#define GLOBALS_H
+
+#include <string>
+
+// 声明外部全局变量（不分配内存）
+extern int g_totalUsers;           // 整型全局变量
+extern double g_pi;               // 双精度全局变量
+extern std::string g_appName;     // 字符串全局变量
+extern bool g_isInitialized;      // 布尔全局变量
+
+// 声明外部函数
+extern void initializeGlobals();
+extern int getUserCount();
+
+#endif
+```
+
+```c++
+// globals.cpp - 源文件中实际定义变量
+#include "globals.h"
+#include <string>
+
+// 定义全局变量（分配内存）
+int g_totalUsers = 0;                     // 初始化为0
+double g_pi = 3.141592653589793;         // 定义PI值
+std::string g_appName = "MyApp";         // 定义应用名称
+bool g_isInitialized = false;            // 定义初始化标志
+
+// 定义函数
+void initializeGlobals() {
+    g_totalUsers = 100;
+    g_isInitialized = true;
+}
+
+int getUserCount() {
+    return g_totalUsers;
+}
+```
+
+c++17下可以用inline来定义➕声明
+
+```c++
+// C++17 更好的方式（内联变量）
+inline int globalConfig = 42;  // 单一定义，无需extern
+```
+
 ## goto
 
 ```c
@@ -490,7 +571,47 @@ void example() {
 
 
 
+# API
 
+容器
+
+std::move( )
+
+```c++
+// move example
+#include <utility>      // std::move
+#include <iostream>     // std::cout
+#include <vector>       // std::vector
+#include <string>       // std::string
+
+int main () {
+  std::string foo = "foo-string";
+  std::string bar = "bar-string";
+  std::vector<std::string> myvector;
+
+  myvector.push_back (foo);                    // copies
+  myvector.push_back (std::move(bar));         // moves
+
+  std::cout << "myvector contains:";
+  for (std::string& x:myvector) std::cout << ' ' << x;
+  std::cout << '\n';
+
+  return 0;
+}
+```
+
+
+
+```c++
+// 应该用move的情况：
+// 1. 明确不再需要源对象
+std::unique_ptr<int> ptr1 = std::make_unique<int>(42);
+std::unique_ptr<int> ptr2 = std::move(ptr1);  // ptr1不再拥有资源
+
+// 2. 转移大型对象所有权
+std::vector<int> data = get_large_data();
+process(std::move(data));  // 明确转移所有权
+```
 
 
 
@@ -4569,6 +4690,7 @@ HASH算法不能称为加密算法 因为加密后 不能还原
 
 因为在DES算法中 密文长度与明文长度相同 且每八位一组 64位刚好除尽 所以会添加八位校验位也就是72位 72位减去八位得64位
 
+<<<<<<< Updated upstream
 
 
 # 
@@ -4669,3 +4791,5 @@ inline StatusCode status_code(const std::string &status_code_string) noexcept {
 ```
 
 局部类限制了，该类只能在函数内部调用保证了接口的安全性，并且其继承了容器类，这样直接就可以使用该容器的函数以及容器结构，但是这也暴露了一些接口，例如用户在调用时还可以调用别的unordered_map的别的方法
+=======
+>>>>>>> Stashed changes
