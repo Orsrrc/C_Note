@@ -7,6 +7,7 @@ Mat cv::imread (const String & 	filename, int flags = IMREAD_COLOR) //图片的�
 //Destroys all of the HighGUI windows.
 //The function destroyAllWindows destroys all of the opened HighGUI windows.
 void cv::imshow	(const String & winname, InputArray mat )
+    //winname表示窗口名，InputArray为输入图像的矩阵格式
 int cv::waitKey	(	int 	delay = 0	);//延迟函数  当delay为0时代表死循环
 void cv::destroyAllWindows	() //资源释放
 ```
@@ -23,8 +24,6 @@ void cv::namedWindow(	const String & 	winname, int flags = WINDOW_AUTOSIZE)
 ```
 
 在opencv中，24位表示一个深度  如一个depth() 返回的值为1表示24bit
-
-
 
 # 图像色彩空间转换
 
@@ -85,23 +84,49 @@ void cv::namedWindow(	const String & 	winname, int flags = WINDOW_AUTOSIZE)
 ### cvtColor( );
 
 ```c++
-void cv::cvtColor	(	InputArray 	src, OutputArray 	dst, int 	code, int 	dstCn = 0 )	
+void cv::cvtColor	(	InputArray 	src, OutputArray 	dst, int 	code, int 	dstCn = 0 )	;
     //Converts an image from one color space to another.
     /*
-    So the first byte in a standard (24-bit) color image will be an 8-bit Blue component, the second byte will be Green, and the third byte will be Red. The fourth, fifth, and sixth bytes would then be the second pixel (Blue, then Green, then Red), and so on.
+    So the first byte in a standard (24-bit) color image will be an 8-bit Blue(2^8 = 256;0~255) component, the second byte will be Green, and the third byte will be Red. The fourth, fifth, and sixth bytes would then be the second pixel (Blue, then Green, then Red), and so on.
     */
+    
+	//HSV<-> BGR
+	//RGB三色通道，都是颜色处理的，但是当想对图像的亮度进行处理的时候，就可以先转换到HSV格式，调整亮度之后，重新变为RGB通道
+	//H色调（Hue）、S饱和度（Saturation） V明度（Value）
+	cvtColor(inputImage, outputImage, COLOR_BGR2HSV)
+
+	//BGR->GRAY 转换为灰度图像
+  cvtColor(inputImage, outputImage, COLOR_BGR2GRAY)
+  
+  //RGB <-> BGR
 ```
 
-
-
-
-
-
-
-
+imshow()通常支持8bit的图像和32bit的float的图像，可以通过.type()去查看图像的类型
 
 imwrite( );
 
-HSV<-> BGR
+# 图像对象的创建
 
-RGB <-> BGR
+Mat基本结构
+
+![image-20260121100204966](./Opencv4.assets/image-20260121100204966.png)
+
+一个图像在cv中被保存了两部分，在header中存储图像的属性，例如图像的大小，图像的数据类型等等。在cv中，如果对某一对象进行赋值，那么两个对象都会指向同一个数据块，只有当调用克隆或拷贝方法时，才会对数据块部分内存进行复制。
+
+
+
+在cv中一个图像的大小右宽度*通道数\*高度
+
+例如创建一个空白图像
+
+```c++ 
+Mat m3 = Mat::zeros(size(8,8), CV_8UC3); 
+//8代表8位，UC代表unsigned char 3表示通道数
+//最后获取到的就是3*8*8 的一个矩阵图像
+//channels 代表一个像素点的宽度，cols代表整体的宽度
+```
+
+![image-20260121102436915](./Opencv4.assets/image-20260121102436915.png)
+
+
+
