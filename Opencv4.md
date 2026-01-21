@@ -1,4 +1,4 @@
-## 图像读取与显示
+# 图像读取与显示
 
 在opencv中，所有的图像都是Mat(Matrix)，矩阵类型
 
@@ -26,21 +26,7 @@ void cv::namedWindow(	const String & 	winname, int flags = WINDOW_AUTOSIZE)
 
 
 
-## 图像色彩空间转换
-
-彩色<->灰色
-
-cvtColor( );
-
-```c++
-void cv::cvtColor	(	InputArray 	src, OutputArray 	dst, int 	code, int 	dstCn = 0 )	
-    //Converts an image from one color space to another.
-    /*
-    So the first byte in a standard (24-bit) color image will be an 8-bit Blue component, the second byte will be Green, and the third byte will be Red. The fourth, fifth, and sixth bytes would then be the second pixel (Blue, then Green, then Red), and so on.
-    */
-```
-
-
+# 图像色彩空间转换
 
 ## 归一化（Normalization）
 
@@ -93,6 +79,26 @@ void cv::cvtColor	(	InputArray 	src, OutputArray 	dst, int 	code, int 	dstCn = 0
 >
 > - 线性：所有材料等比例缩放（2人份→4人份）
 > - 非线性：烘烤时间（2倍面团≠2倍时间，有指数关系）
+
+彩色<->灰色
+
+### cvtColor( );
+
+```c++
+void cv::cvtColor	(	InputArray 	src, OutputArray 	dst, int 	code, int 	dstCn = 0 )	
+    //Converts an image from one color space to another.
+    /*
+    So the first byte in a standard (24-bit) color image will be an 8-bit Blue component, the second byte will be Green, and the third byte will be Red. The fourth, fifth, and sixth bytes would then be the second pixel (Blue, then Green, then Red), and so on.
+    */
+```
+
+
+
+
+
+
+
+
 
 imwrite( );
 
